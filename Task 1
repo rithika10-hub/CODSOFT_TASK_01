@@ -1,0 +1,102 @@
+
+import json
+
+# File to store tasks
+TASKS_FILE = 'tasks.json'
+
+def load_tasks():
+    """Load tasks from the file."""
+    try:
+        with open(TASKS_FILE, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+
+def save_tasks(tasks):
+    """Save tasks to the file."""
+    with open(TASKS_FILE, 'w') as f:
+        json.dump(tasks, f)
+
+def add_task(tasks, title, description):
+    """Add a new task."""
+    task = {
+        'title': title,
+        'description': description,
+        'completed': False
+    }
+    tasks.append(task)
+    save_tasks(tasks)
+
+def view_tasks(tasks):
+    """View all tasks."""
+    if not tasks:
+        print("No tasks available.")
+        return
+
+    for idx, task in enumerate(tasks, 1):
+        status = "Completed" if task['completed'] else "Pending"
+        print(f"{idx}. {task['title']} - {status}\n   {task['description']}")
+
+def update_task(tasks, index, title, description):
+    """Update an existing task."""
+    if 0 <= index < len(tasks):
+        tasks[index]['title'] = title
+        tasks[index]['description'] = description
+        save_tasks(tasks)
+    else:
+        print("Task not found.")
+
+def delete_task(tasks, index):
+    """Delete a task."""
+    if 0 <= index < len(tasks):
+        tasks.pop(index)
+        save_tasks(tasks)
+    else:
+        print("Task not found.")
+
+def mark_task_complete(tasks, index):
+    """Mark a task as complete."""
+    if 0 <= index < len(tasks):
+        tasks[index]['completed'] = True
+        save_tasks(tasks)
+    else:
+        print("Task not found.")
+
+def main():
+    tasks = load_tasks()
+
+    while True:
+        print("\nTo-Do List Application")
+        print("1. Add Task")
+        print("2. View Tasks")
+        print("3. Update Task")
+        print("4. Delete Task")
+        print("5. Mark Task as Complete")
+        print("6. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            title = input("Enter task title: ")
+            description = input("Enter task description: ")
+            add_task(tasks, title, description)
+        elif choice == '2':
+            view_tasks(tasks)
+        elif choice == '3':
+            index = int(input("Enter task number to update: ")) - 1
+            title = input("Enter new task title: ")
+            description = input("Enter new task description: ")
+            update_task(tasks, index, title, description)
+        elif choice == '4':
+            index = int(input("Enter task number to delete: ")) - 1
+            delete_task(tasks, index)
+        elif choice == '5':
+            index = int(input("Enter task number to mark complete: ")) - 1
+            mark_task_complete(tasks, index)
+        elif choice == '6':
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
